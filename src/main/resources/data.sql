@@ -1,0 +1,2 @@
+insert into user_account (user_id, user_password, nickname, email, memo, create_at, created_by, modified_at, modified_by) valeus
+('mint', '1234!!', 'mint', 'mint@email.com', 'memo', now(), 'mint', now(), 'mint')
