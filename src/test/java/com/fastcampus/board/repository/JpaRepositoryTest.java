@@ -43,7 +43,7 @@ class JpaRepositoryTest {
     @Test
     void givenTestData_whenInserting_thenWorksFine() {
         // Given
-        Article article = Article.of("title", "content", "spring");
+        Article article = Article.of(null, "title", "content", "spring");
         articleRepository.save(article);
 
         // when
@@ -57,7 +57,7 @@ class JpaRepositoryTest {
     @Test
     void givenTestData_whenUpdating_thenWorksFine() {
         // Given
-        Article article = Article.of("title", "content", "spring");
+        Article article = Article.of(null, "title", "content", "spring");
         articleRepository.save(article);
 
         // when
@@ -83,10 +83,10 @@ class JpaRepositoryTest {
     @Test
     void givenTestData_whenDeleting_thenWorksFine() {
         // Given
-        Article article = Article.of("title", "content", "spring");
+        Article article = Article.of(null, "title", "content", "spring");
         articleRepository.save(article);
 
-        ArticleComment articleComment = ArticleComment.of(article, "content");
+        ArticleComment articleComment = ArticleComment.of(article, null, "content");
         articleCommentRepository.save(articleComment);
 
         entityManager.flush();

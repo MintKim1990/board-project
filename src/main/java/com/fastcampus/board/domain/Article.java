@@ -42,7 +42,7 @@ public class Article extends AuditingFields {
     private String content; // 본문
 
     @Setter
-    @Column(nullable = false)
+    @Column
     private String hashtag; // 해시태그
 
     @ToString.Exclude
