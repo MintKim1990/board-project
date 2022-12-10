@@ -4,7 +4,9 @@ import com.fastcampus.board.domain.type.SearchType;
 import com.fastcampus.board.response.ArticleResponse;
 import com.fastcampus.board.response.ArticleWithCommentsResponse;
 import com.fastcampus.board.service.ArticleService;
+import com.fastcampus.board.service.PaginationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -15,12 +17,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RequestMapping("/articles")
 @Controller
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final PaginationService paginationService;
 
     @GetMapping
     public String articles(
@@ -29,7 +34,12 @@ public class ArticleController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             ModelMap map
     ) {
-        map.addAttribute("articles", articleService.searchArticles(searchType, searchValue, pageable).map(ArticleResponse::from));
+        Page<ArticleResponse> artibles = articleService.searchArticles(searchType, searchValue, pageable).map(ArticleResponse::from);
+        List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), artibles.getTotalPages());
+
+        map.addAttribute("articles", artibles);
+        map.addAttribute("paginationBarNumbers", barNumbers);
+
         return "articles/index";
     }
 
