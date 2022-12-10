@@ -5,6 +5,7 @@ import com.fastcampus.board.domain.Article;
 import com.fastcampus.board.dto.ArticleWithCommentsDto;
 import com.fastcampus.board.repository.ArticleRepository;
 import com.fastcampus.board.service.ArticleService;
+import com.fastcampus.board.service.PaginationService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,6 +37,7 @@ class ArticleControllerTest {
 
     @Autowired private MockMvc mvc;
     @MockBean private ArticleService articleService;
+    @MockBean private PaginationService paginationService;
     @MockBean private ArticleRepository articleRepository;
 
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 정상 호출")
@@ -44,12 +45,15 @@ class ArticleControllerTest {
     public void givenNothing_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
         // given
         given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class))).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
+
         // when then
         mvc.perform(get("/articles"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("articles"));
 
         then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
     @Disabled
