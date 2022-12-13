@@ -2,6 +2,7 @@ package com.fastcampus.board.controller;
 
 import com.fastcampus.board.config.SecurityConfig;
 import com.fastcampus.board.domain.Article;
+import com.fastcampus.board.domain.type.SearchType;
 import com.fastcampus.board.dto.ArticleWithCommentsDto;
 import com.fastcampus.board.repository.ArticleRepository;
 import com.fastcampus.board.service.ArticleService;
@@ -42,17 +43,26 @@ class ArticleControllerTest {
 
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 정상 호출")
     @Test
-    public void givenNothing_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
+    public void givenSearchKeyword_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
+
+        SearchType searchType = SearchType.TITLE;
+        String searchValue = "title";
+
         // given
-        given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class))).willReturn(Page.empty());
+        given(articleService.searchArticles(eq(searchType), eq(searchValue), any(Pageable.class))).willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4));
 
         // when then
-        mvc.perform(get("/articles"))
+        mvc.perform(
+                get("/articles")
+                        .queryParam("searchType", searchType.name())
+                        .queryParam("searchValue", searchValue)
+                )
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("articles"));
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("searchTypes"));
 
-        then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(articleService).should().searchArticles(eq(searchType), eq(searchValue), any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
